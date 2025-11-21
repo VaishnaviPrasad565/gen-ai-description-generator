@@ -8,6 +8,9 @@ from typing import Dict
 import streamlit as st
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 
+
+
+
 # ============= CONFIG =============
 MODEL_ID = "google/gemma-2b-it"
 DATA_PATH = "product_dataset.xlsx"  # upload this file in the same folder when running locally
