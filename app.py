@@ -124,26 +124,30 @@ Use a short 2–3 paragraph narrative description and end with a call-to-action 
 
 @st.cache_resource(show_spinner=True)
 @st.cache_resource(show_spinner=True)
+@st.cache_resource(show_spinner=True)
 def load_model_and_data():
-    # Load your dataset
-        df = pd.read_excel(DATA_PATH)
+    # 1) Load dataset
+    df = pd.read_excel(DATA_PATH)
 
-            # Load tokenizer and model with accelerate (device_map="auto")
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
-        model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID,
-            torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto"   # accelerate handles devices
-            )
+    # 2) Load tokenizer & model (no token needed for TinyLlama)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
 
-                                                    # IMPORTANT: do NOT pass `device=` when using accelerate
-        gen_pipeline = pipeline(
-                                                                "text-generation",
-          model=model,
-          tokenizer=tokenizer,
-        )
+    # Use dtype instead of deprecated torch_dtype
+    model = AutoModelForCausalLM.from_pretrained(
+        MODEL_ID,
+        dtype=torch.float32,     # safe on CPU
+        device_map="auto"        # let transformers handle device
+    )
 
-        return df, gen_pipeline
+    # 3) Build text-generation pipeline (NO device arg when using accelerate/device_map)
+    gen_pipeline = pipeline(
+        "text-generation",
+        model=model,
+        tokenizer=tokenizer,
+    )
+
+    return df, gen_pipeline
+
 
 
 def generate_text(gen_pipeline, prompt: str, target_words: int) -> str:
