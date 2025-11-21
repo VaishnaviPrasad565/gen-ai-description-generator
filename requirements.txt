@@ -1,0 +1,11 @@
+
+streamlit
+transformers>=4.35.0
+accelerate>=0.24.0
+sentencepiece
+textstat
+pandas
+openpyxl
+torch
+pyngrok==4.1.1
+huggingface_hub
